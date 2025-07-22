@@ -1,0 +1,21 @@
+.App {
+  font-family: sans-serif;
+  padding: 2rem;
+  max-width: 800px;
+  margin: auto;
+}
+
+.day {
+  margin-bottom: 2rem;
+  padding: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+.slot {
+  margin-bottom: 1rem;
+}
+
+ul {
+  padding-left: 1.5rem;
+}
