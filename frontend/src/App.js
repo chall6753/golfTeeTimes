@@ -1,57 +1,28 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useState } from 'react';
 import TeeTimeAlertForm from './components/TeeTimeAlertForm';
+import LoginForm from './components/LoginForm';
+import SubscriptionList from './components/SubscriptionList';
 import './App.css';
 
 function App() {
-  const [teeTimes, setTeeTimes] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [userId, setUserId] = useState(null);
+  const [activeTab, setActiveTab] = useState('alerts'); // 'alerts' or 'subscriptions'
 
-  useEffect(() => {
-    const fetchTeeTimes = async () => {
-      try {
-        const response = await axios.get('http://localhost:3001/tee-times?days=3');
-        setTeeTimes(response.data);
-      } catch (error) {
-        console.error('Error fetching tee times:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchTeeTimes();
-  }, []);
+  if (!userId) return <LoginForm onLogin={setUserId} />;
 
   return (
-    <div className="App">
-      <h1>Denver Golf Tee Times</h1>
+    <div className="app-container">
+      <aside className="sidebar">
+        <h2>Menu</h2>
+        <button onClick={() => setActiveTab('alerts')}>New Alert</button>
+        <button onClick={() => setActiveTab('subscriptions')}>My Subscriptions</button>
+      </aside>
 
-      {loading ? (
-        <p>Loading tee times...</p>
-      ) : (
-        teeTimes.map((day, i) => (
-          <div key={i} className="day">
-            <h2>{day.date}</h2>
-            {day.teeTimes.map((slot, j) => (
-              <div key={j} className="slot">
-                <strong>{slot.time}</strong>
-                <ul>
-                  {slot.bookings.map((b, k) => (
-                    <li key={k}>
-                      {b.course} — {b.price}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-        ))
-      )}
-
-      <hr />
-
-      {/* Add the alert signup form here */}
-      <TeeTimeAlertForm />
+      <main className="main-content">
+        <h1>Denver Golf Tee Times</h1>
+        {activeTab === 'alerts' && <TeeTimeAlertForm userId={userId} />}
+        {activeTab === 'subscriptions' && <SubscriptionList userId={userId} />}
+      </main>
     </div>
   );
 }

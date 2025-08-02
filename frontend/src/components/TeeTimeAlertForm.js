@@ -13,13 +13,12 @@ const COURSE_OPTIONS = [
   'Other'
 ];
 
-function TeeTimeAlertForm() {
+function TeeTimeAlertForm({ userId }) {
   const [form, setForm] = useState({
     course: '',
     timeFrom: '',
     timeTo: '',
-    players: 1,
-    email: ''
+    players: 1
   });
 
   const [statusMessage, setStatusMessage] = useState('');
@@ -37,13 +36,14 @@ function TeeTimeAlertForm() {
       const response = await fetch('http://localhost:3001/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form)
+        body: JSON.stringify({ ...form, userId })
       });
 
       if (response.ok) {
         setStatusMessage('✅ Preferences saved! You’ll be emailed if a match is found.');
       } else {
-        setStatusMessage('❌ Something went wrong. Please try again.');
+        const err = await response.json();
+        setStatusMessage(`❌ ${err.error || 'Something went wrong.'}`);
       }
     } catch (error) {
       setStatusMessage('❌ Failed to connect to the server.');
@@ -78,11 +78,6 @@ function TeeTimeAlertForm() {
       <label>
         Number of Players:
         <input name="players" type="number" min="1" max="4" value={form.players} onChange={handleChange} required />
-      </label>
-
-      <label>
-        Email:
-        <input name="email" type="email" value={form.email} onChange={handleChange} required />
       </label>
 
       <button type="submit">Subscribe</button>
